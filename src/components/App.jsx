@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import Searchbar from './Searchbar';
 import axios from 'axios';
@@ -8,7 +8,7 @@ import Modal from './Modal';
 import { ThreeDots } from 'react-loader-spinner';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import API from './restAPI';
+// import API from './restAPI';
 
 const Container = styled.div`
   width: 100%;
@@ -31,16 +31,9 @@ const App = () => {
   const [loader, setLoader] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [query, setQuery] = useState('');
+  const [targetForModal, setTargetForModal] = useState(null);
 
-  useEffect(() => {
-    getData();
-  }, []);
-
-  useEffect(() => {
-    getData();
-  }, [currentPage, query]);
-
-  const getData = async () => {
+  const getData = useCallback(async () => {
     setLoader(true);
     try {
       const response = await axios.get(
@@ -52,55 +45,40 @@ const App = () => {
     } finally {
       setLoader(false);
     }
-  };
+  }, [currentPage, query]);
 
-  // const onEscPress = boollean => {
-  //   this.setState({ modal: boollean });
-  // };
+  useEffect(() => {
+    getData();
+  }, [getData]);
 
   const onSubmit = value => {
     setQuery(value);
     setCurrentPage(1);
     setCollection([]);
-    setLoader(true);
   };
 
   const onClickLoadMore = () => {
     setCurrentPage(prevState => prevState + 1);
   };
 
-  // const openItemInModal = event => {
-  //   if (event.target.nodeName === 'IMG') {
-  //     const { target } = event;
-  //     this.setState({
-  //       modal: true,
-  //       target,
-  //     });
-  //   }
-  // };
-
-  // const closeModal = event => {
-  //   if (event.target.nodeName !== 'IMG') {
-  //     this.setState({ modal: false });
-  //   }
-  // };
+  const onClick = event => {
+    if (event.target.nodeName === 'IMG') {
+      setTargetForModal(event.target.dataset.href);
+    }
+  };
 
   return (
     <Container>
       <Searchbar onSubmitUp={onSubmit} />
       {collection.length > 0 ? (
-        <ImageGallery collection={collection} onClick={'openItemInModal'} />
+        <ImageGallery collection={collection} onClick={onClick} />
       ) : (
         'Уточните поиск'
       )}
 
-      {/* {this.state.modal && (
-        <Modal
-          target={this.state.target}
-          onClick={this.closeModal}
-          onPressKey={this.onEscPress}
-        />
-      )} */}
+      {targetForModal && (
+        <Modal target={targetForModal} resetTarget={setTargetForModal} />
+      )}
 
       <ThreeDots
         height="80"

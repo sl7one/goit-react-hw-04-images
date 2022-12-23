@@ -24,7 +24,7 @@ const Img = styled.img`
 const ImageGalleryItem = ({ small, large, alt }) => {
   return (
     <ImgWrapper>
-      <Img src={small} href={large} alt={alt} />
+      <Img src={small} data-href={large} alt={alt} />
     </ImgWrapper>
   );
 };

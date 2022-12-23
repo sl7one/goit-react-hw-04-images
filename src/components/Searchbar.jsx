@@ -11,6 +11,7 @@ const Searchbar = ({ onSubmitUp }) => {
   const onSubmit = event => {
     event.preventDefault();
     onSubmitUp(value.toLocaleLowerCase());
+    setValue('');
   };
 
   return (

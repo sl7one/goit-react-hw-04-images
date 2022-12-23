@@ -1,7 +1,8 @@
 import React from 'react';
-
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 const Overlay = styled.div`
   position: fixed;
@@ -21,37 +22,41 @@ const Wrapper = styled.div`
   max-height: calc(100vh - 24px);
 `;
 
-class Modal extends React.Component {
-  onEscPress = event => {
-    console.log(event);
-    if (event.code === 'Escape') {
-      this.props.onPressKey(false);
-    }
+const Modal = ({ target, resetTarget }) => {
+  const onEscPress = event => {
+    // console.log(event);
+    if (event.code !== 'Escape') return;
+    resetTarget(null);
   };
 
-  componentDidMount() {
-    document.addEventListener('keydown', this.onEscPress);
-  }
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.onEscPress);
-  }
+  const cachedFn = useCallback(onEscPress, [resetTarget]);
 
-  render() {
-    const { value } = this.props.target.attributes.href;
-    return (
-      <Overlay className="overlay" onClick={this.props.onClick}>
-        <Wrapper className="modal">
-          <img src={value} alt={this.props.target.alt} />
-        </Wrapper>
-      </Overlay>
-    );
-  }
-}
+  useEffect(() => {
+    document.addEventListener('keydown', cachedFn);
+    return () => {
+      document.removeEventListener('keydown', cachedFn);
+    };
+  }, [cachedFn]);
+
+  const onClick = event => {
+    if (event.target.nodeName !== 'DIV') return;
+    resetTarget(null);
+  };
+
+  return createPortal(
+    <Overlay className="overlay" onClick={onClick}>
+      <Wrapper className="modal">
+        <img src={target} alt={''} />
+      </Wrapper>
+    </Overlay>,
+    document.querySelector('#modal')
+  );
+};
 
 export default Modal;
 
 Modal.propTypes = {
-  target: PropTypes.object.isRequired,
+  target: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
   onPressEsc: PropTypes.func,
 };
