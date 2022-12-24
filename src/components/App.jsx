@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import Searchbar from './Searchbar';
 import axios from 'axios';
@@ -6,9 +6,6 @@ import ImageGallery from './ImageGallery';
 import Button from './Button';
 import Modal from './Modal';
 import { ThreeDots } from 'react-loader-spinner';
-import { useState } from 'react';
-import { useEffect } from 'react';
-// import API from './restAPI';
 
 const Container = styled.div`
   width: 100%;

@@ -24,7 +24,6 @@ const Wrapper = styled.div`
 
 const Modal = ({ target, resetTarget }) => {
   const onEscPress = event => {
-    // console.log(event);
     if (event.code !== 'Escape') return;
     resetTarget(null);
   };
@@ -57,6 +56,6 @@ export default Modal;
 
 Modal.propTypes = {
   target: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
+  onClick: PropTypes.func,
   onPressEsc: PropTypes.func,
 };
